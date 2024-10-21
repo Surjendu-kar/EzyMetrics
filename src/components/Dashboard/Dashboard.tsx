@@ -1,24 +1,10 @@
 import React, { useState } from "react";
-import { Grid, Paper, Typography, Button } from "@mui/material";
-import { Bar } from "react-chartjs-2";
+import { Grid, Paper, Typography, Button, Box } from "@mui/material";
 import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-} from "chart.js";
-
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend
-);
+  PerformanceWidget,
+  LeadSummaryWidget,
+  NewWidget,
+} from "./WidgetComponents";
 
 interface Widget {
   id: string;
@@ -26,64 +12,33 @@ interface Widget {
   content: React.ReactNode;
 }
 
+const initialWidgets: Widget[] = [
+  {
+    id: "performance",
+    title: "Performance",
+    content: <PerformanceWidget />,
+  },
+  {
+    id: "leads",
+    title: "Lead Summary",
+    content: <LeadSummaryWidget />,
+  },
+];
+
 const Dashboard: React.FC = () => {
-  const [widgets, setWidgets] = useState<Widget[]>([
-    {
-      id: "performance",
-      title: "Performance",
-      content: (
-        <Bar
-          data={{
-            labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
-            datasets: [
-              {
-                label: "Sales",
-                data: [12, 19, 3, 5, 2, 3],
-                backgroundColor: "rgba(75, 192, 192, 0.6)",
-              },
-            ],
-          }}
-          options={{
-            responsive: true,
-            plugins: {
-              legend: {
-                position: "top" as const,
-              },
-              title: {
-                display: true,
-                text: "Monthly Sales",
-              },
-            },
-          }}
-        />
-      ),
-    },
-    {
-      id: "leads",
-      title: "Lead Summary",
-      content: (
-        <Typography variant="body1">
-          Total Leads: 150
-          <br />
-          New Leads: 25
-          <br />
-          Converted: 10
-        </Typography>
-      ),
-    },
-  ]);
+  const [widgets, setWidgets] = useState<Widget[]>(initialWidgets);
 
   const addWidget = () => {
     const newWidget: Widget = {
       id: `widget-${widgets.length + 1}`,
       title: `New Widget ${widgets.length + 1}`,
-      content: <Typography>This is a new widget.</Typography>,
+      content: <NewWidget />,
     };
     setWidgets([...widgets, newWidget]);
   };
 
   return (
-    <div>
+    <Box>
       <Typography variant="h4" gutterBottom>
         Dashboard
       </Typography>
@@ -114,7 +69,7 @@ const Dashboard: React.FC = () => {
           </Grid>
         ))}
       </Grid>
-    </div>
+    </Box>
   );
 };
 
