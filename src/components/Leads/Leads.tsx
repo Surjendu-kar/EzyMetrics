@@ -11,7 +11,15 @@ import {
   Button,
   Select,
   MenuItem,
+  Stack,
+  IconButton,
+  Tooltip,
 } from "@mui/material";
+import {
+  Edit as EditIcon,
+  Visibility as ViewIcon,
+  Delete as DeleteIcon,
+} from "@mui/icons-material";
 import LeadModal from "./LeadModal";
 
 interface Lead {
@@ -52,9 +60,9 @@ const Leads: React.FC = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [isNewLead, setIsNewLead] = useState(false);
 
-  const handleOpenModal = (lead: Lead | null) => {
+  const handleOpenModal = (lead: Lead | null, isNew: boolean = false) => {
     setSelectedLead(lead);
-    setIsNewLead(!lead);
+    setIsNewLead(isNew);
     setModalOpen(true);
   };
 
@@ -76,27 +84,30 @@ const Leads: React.FC = () => {
     }
   };
 
-  const handleChangeStatus = (leadId: number, newStatus: string) => {
-    setLeads(
-      leads.map((lead) =>
-        lead.id === leadId ? { ...lead, status: newStatus } : lead
-      )
-    );
+  const handleDeleteLead = (leadId: number) => {
+    if (window.confirm("Are you sure you want to delete this lead?")) {
+      setLeads(leads.filter((lead) => lead.id !== leadId));
+    }
   };
 
   return (
     <div>
-      <Typography variant="h4" gutterBottom>
-        Leads
-      </Typography>
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={() => handleOpenModal(null)}
-        sx={{ mb: 2 }}
+      <Stack
+        direction="row"
+        justifyContent="space-between"
+        alignItems="center"
+        sx={{ mb: 3 }}
       >
-        Add New Lead
-      </Button>
+        <Typography variant="h4">Leads</Typography>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => handleOpenModal(null, true)}
+        >
+          Add New Lead
+        </Button>
+      </Stack>
+
       <TableContainer component={Paper}>
         <Table>
           <TableHead>
@@ -105,7 +116,7 @@ const Leads: React.FC = () => {
               <TableCell>Email</TableCell>
               <TableCell>Phone</TableCell>
               <TableCell>Status</TableCell>
-              <TableCell>Actions</TableCell>
+              <TableCell align="center">Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -118,7 +129,10 @@ const Leads: React.FC = () => {
                   <Select
                     value={lead.status}
                     onChange={(e) =>
-                      handleChangeStatus(lead.id, e.target.value as string)
+                      handleSaveLead({
+                        ...lead,
+                        status: e.target.value as string,
+                      })
                     }
                     size="small"
                   >
@@ -129,12 +143,35 @@ const Leads: React.FC = () => {
                   </Select>
                 </TableCell>
                 <TableCell>
-                  <Button
-                    variant="outlined"
-                    onClick={() => handleOpenModal(lead)}
-                  >
-                    View Details
-                  </Button>
+                  <Stack direction="row" spacing={1} justifyContent="center">
+                    <Tooltip title="View Details">
+                      <IconButton
+                        onClick={() => handleOpenModal(lead)}
+                        color="primary"
+                        size="small"
+                      >
+                        <ViewIcon />
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip title="Edit">
+                      <IconButton
+                        onClick={() => handleOpenModal(lead)}
+                        color="primary"
+                        size="small"
+                      >
+                        <EditIcon />
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip title="Delete">
+                      <IconButton
+                        onClick={() => handleDeleteLead(lead.id)}
+                        color="error"
+                        size="small"
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    </Tooltip>
+                  </Stack>
                 </TableCell>
               </TableRow>
             ))}
