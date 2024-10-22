@@ -1,4 +1,3 @@
-// Leads.tsx
 import React, { useState } from "react";
 import {
   Table,
